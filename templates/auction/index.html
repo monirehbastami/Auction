@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Index Page{% endblock %}
+
+{% block content %}
+
+<section class="section-box">
+    <h2>Most Expensive Items</h2>
+    <div class="scroll-wrapper">
+        <button class="scroll-left" onclick="scrollLeft('most-expensive')">&lt;</button>
+        <div class="scroll-container" id="most-expensive">
+            {% for item in most_expensive_items %}
+                <div class="item-box">
+                    <a href="{% url 'item' item.id %}">
+                        <img src="{% if item.image %}{{ item.image.url }}{% else %}{% static 'images/default-item.jpg' %}{% endif %}" alt="{{ item.name }}">
+                        <p><strong>{{ item.name }}</strong></p>
+                        <p>Created: {{ item.created_at|timesince }} ago</p>
+                        <p>Price: ${{ item.price }}</p>
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+        <button class="scroll-right" onclick="scrollRight('most-expensive')">&gt;</button>
+    </div>
+</section>
+
+<section class="section-box">
+    <h2>Ending Soonest</h2>
+    <div class="scroll-wrapper">
+        <button class="scroll-left" onclick="scrollLeft('ending-soonest')">&lt;</button>
+        <div class="scroll-container" id="ending-soonest">
+            {% for item in ending_soonest_items %}
+                <div class="item-box">
+                    <a href="{% url 'item' item.id %}">
+                        <img src="{% if item.image %}{{ item.image.url }}{% else %}{% static 'images/default-item.jpg' %}{% endif %}" alt="{{ item.name }}">
+                        <p><strong>{{ item.name }}</strong></p>
+                        <p>Created: {{ item.created_at|timesince }} ago</p>
+                        <p>Time Left: {{ item.get_time_left }}</p>
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+        <button class="scroll-right" onclick="scrollRight('ending-soonest')">&gt;</button>
+    </div>
+</section>
+
+<section class="section-box">
+    <h2>Most Viewed Items</h2>
+    <div class="scroll-wrapper">
+        <button class="scroll-left" onclick="scrollLeft('most-viewed')">&lt;</button>
+        <div class="scroll-container" id="most-viewed">
+            {% for item in most_viewed_items %}
+                <div class="item-box">
+                    <a href="{% url 'item' item.id %}">
+                        <img src="{% if item.image %}{{ item.image.url }}{% else %}{% static 'images/default-item.jpg' %}{% endif %}" alt="{{ item.name }}">
+                        <p><strong>{{ item.name }}</strong></p>
+                        <p>Created: {{ item.created_at|timesince }} ago</p>
+                        <p>Views: {{ item.views_count }}</p>
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+        <button class="scroll-right" onclick="scrollRight('most-viewed')">&gt;</button>
+    </div>
+</section>
+
+{% endblock %}

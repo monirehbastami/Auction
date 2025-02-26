@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+{% block content %}
+<main>
+    <section class="item-container" style="display: flex;">
+        <img class="img-item" src="{% if item.image %}{{ item.image.url }}{% else %}item.jpg{% endif %}" width="150" height="150" alt="Item Image">
+        <div class="details">
+            <h2>{{ item.name }}</h2>
+            <p><strong>See the Seller:</strong> {{ item.created_by.username }}</p>
+            <p>{{ item.description }}</p>
+        </div>
+        <div class="likes-box">
+            <span style="height:20%;">❤️ {{ item.likes_count }} Likes</span>
+        </div>
+        {% if request.user == item.created_by %}
+        <div class="edit-section">
+            <a href="{% url 'edit_item' item.id %}" class="btn">Edit Item</a>
+        </div>
+        {% endif %}
+    </section>
+    <section class="auction-info">
+        <h3>Auction Information</h3>
+        <p><strong>Total Bids:</strong> {{ item.bid_count }}</p>
+        <p><strong>Highest Bid:</strong> ${{ item.price }}</p>
+        <p><strong>Time Left:</strong> {{ item.get_time_left }}</p>
+    </section>
+
+    <section class="bid-box">
+        <h3>Place Your Bid</h3>
+        <form method="post" action="{% url 'bid_item' item.id %}" onsubmit="return checkAuctionStatus(event)">
+            {% csrf_token %}
+            <input type="number" name="bid_amount" placeholder="Enter your bid" min="0" required>
+            <button type="submit" class="btn">Submit Bid</button>
+        </form>
+    </section>
+    
+    <section>
+        <canvas id="bidChart"></canvas>
+    </section>
+    
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+
+
+<script>
+  
+    let bidHistoryJSON = '{{ bid_history|escapejs }}';
+    let bidHistory = [];
+    if (bidHistoryJSON.trim() !== "") {
+        bidHistory = JSON.parse(bidHistoryJSON);
+    }
+  
+    const times = bidHistory.map(bid => bid.time);
+    const amounts = bidHistory.map(bid => bid.amount);
+    const ctx = document.getElementById('bidChart').getContext('2d');
+    const bidChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: times, 
+            datasets: [{
+                label: 'Bid Amount',
+                data: amounts, 
+                fill: false,
+                borderColor: 'rgb(75, 192, 192)',
+                tension: 0.1
+            }]
+        },
+        options: {
+            scales: {
+                x: {
+                    type: 'time', 
+                    time: {
+                        unit: 'minute'
+                    },
+                    title: {
+                        display: true,
+                        text: 'Time'
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Amount'
+                    }
+                }
+            }
+        }
+    });
+</script>
+
+<div id="auctionClosedPopup" class="popup">
+    <div class="popup-content">
+        <span class="close-btn" onclick="closePopup()">&times;</span>
+        <p>This auction has ended. No more bids allowed.</p>
+    </div>
+</div>
+
+<script>
+    function checkAuctionStatus(event) {
+        let auctionTimeLeft = "{{ item.get_time_left }}";  
+
+        if (auctionTimeLeft === "Expired") {
+            event.preventDefault(); 
+            document.getElementById("auctionClosedPopup").style.display = "block";
+            return false;
+        }
+        return true;
+    }
+
+    function closePopup() {
+        document.getElementById("auctionClosedPopup").style.display = "none";
+    }
+</script>
+
+
+{% endblock %}
+

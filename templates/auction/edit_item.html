@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container-edit-item">
+    <h2>Edit Item</h2>
+    <img class="img-item" src="{% if item.image %}{{ item.image.url }}{% else %}item.jpg{% endif %}" width="150"height="150"alt="Item Image">
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div>
+            <label for="{{ form.name.id_for_label }}">{{ form.name.label }}</label>
+            {{ form.name }}
+        </div>
+
+        <div>
+            <label for="{{ form.description.id_for_label }}">{{ form.description.label }}</label>
+            {{ form.description }}
+        </div>
+
+        <div>
+            <label for="{{ form.duration.id_for_label }}">{{ form.duration.label }}</label>
+            {{ form.duration }}
+            <small class="help-text" >
+                <br> Enter the auction duration in one of the following formats: 
+                <br>- **X days** or **Xd** (e.g., "2 days" or "2d")  
+                <br>- **X hours** or **Xh** (e.g., "1 hour" or "1h")  
+                <br>- **X minutes** or **Xm** (e.g., "30 minutes" or "30m")<br><br>
+            </small>
+        </div>
+
+        <div>
+            <label for="{{ form.image.id_for_label }}">{{ form.image.label }}</label>
+            {{ form.image }}
+        </div>
+
+        <button type="submit">Save Changes</button>
+    </form>
+    <a href="{% url 'item' item.id %}">Cancel</a>
+</div>
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>All Items</h2>
+<div class="items-grid">
+    {% for item in items %}
+        <div class="item-box" >
+            <a href="{% url 'item' item.id %}">
+                {% if item.image %}
+                    <img src="{{ item.image.url }}" alt="{{ item.name }}">
+                {% else %}
+                    <img src="default-item.jpg" alt="Default Item">
+                {% endif %}
+                <h3>{{ item.name }}</h3>
+                <p>Price: ${{ item.price }}</p>
+                <p>Bids: {{ item.bid_count }}</p>
+            </a>
+        </div>
+
+        {% if forloop.counter|divisibleby:3 and not forloop.last %}
+            </div><div class="items-grid">
+        {% endif %}
+        
+    {% empty %}
+        <p>No items available.</p>
+    {% endfor %}
+</div>
+
+<div class="pagination">
+    {% if items.has_previous %}
+        <a href="?page={{ items.previous_page_number }}">« Prev</a>
+    {% endif %}
+    <span>Page {{ items.number }} of {{ items.paginator.num_pages }}</span>
+    {% if items.has_next %}
+        <a href="?page={{ items.next_page_number }}">Next »</a>
+    {% endif %}
+</div>
+{% endblock %}

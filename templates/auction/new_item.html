@@ -1,0 +1,39 @@
+{% extends 'base.html' %} 
+{% block content %}
+<div class="container-login">
+    <div class="form-box-new-item">
+        <h2>Create New Item</h2>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div>
+                <label for="{{ form.name.id_for_label }}">{{ form.name.label }}</label>
+                {{ form.name }}
+            </div>
+
+            <div>
+                <label for="{{ form.description.id_for_label }}">{{ form.description.label }}</label>
+                {{ form.description }}
+            </div>
+
+            <div>
+                <label for="{{ form.duration.id_for_label }}">{{ form.duration.label }}</label>
+                {{ form.duration }}
+                <small class="help-text">
+                    Enter the auction duration in one of the following formats: 
+                    <br>- **X days** or **Xd** (e.g., "2 days" or "2d")  
+                    <br>- **X hours** or **Xh** (e.g., "1 hour" or "1h")  
+                    <br>- **X minutes** or **Xm** (e.g., "30 minutes" or "30m")
+                </small>
+            </div>
+
+            <div>
+                <label for="{{ form.image.id_for_label }}">{{ form.image.label }}</label>
+                {{ form.image }}
+            </div>
+
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

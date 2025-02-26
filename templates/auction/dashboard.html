@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<section class="profile-header">
+    <img src="{% static 'images/person.png' %}" alt="User Image">
+    <h2>{{ request.user.username }}</h2>
+</section>
+
+<section class="items-section">
+    <h3>Shared & Liked Items</h3>
+    <div class="scroll-wrapper">
+        <button class="scroll-left" onclick="scrollLeft('shared-items')">&lt;</button>
+        <div class="scroll-container" id="shared-items">
+            {% for item in liked_items %}
+                <div class="item-box">
+                    <a href="{% url 'item' item.id %}">
+                        <img src="{{ item.image.url }}" alt="{{ item.name }}">
+                        <p><strong>{{ item.name }}</strong></p>
+                        <p>Likes: {{ item.likes_count }}</p>
+                    </a>
+                </div>
+            {% empty %}
+                <p>No liked items found.</p>
+            {% endfor %}
+        </div>
+        <button class="scroll-right" onclick="scrollRight('shared-items')">&gt;</button>
+    </div>
+</section>
+
+<section class="latest-items-section">
+    <h3>Latest Items from Other Users</h3>
+    <div class="scroll-wrapper">
+        <button class="scroll-left" onclick="scrollLeft('latest-items')">&lt;</button>
+        <div class="scroll-container" id="latest-items">
+            {% for item in other_items %}
+                <div class="item-box">
+                    <a href="{% url 'item' item.id %}">
+                        <img src="{{ item.image.url }}" alt="{{ item.name }}">
+                        <p>{{ item.name }}</p>
+                        <p>Created: {{ item.created_at|timesince }} ago</p>
+                    </a>
+                </div>
+            {% empty %}
+                <p>No items available.</p>
+            {% endfor %}
+        </div>
+        <button class="scroll-right" onclick="scrollRight('latest-items')">&gt;</button>
+    </div>
+
+    <div class="all-items-button">
+        <a href="{% url 'item_list' %}" class="btn">ُShow all items</a>
+    </div>
+</section>
+
+<section>
+    <h3>My Listings</h3>
+    <div class="sort-section">
+        <form method="get">
+            <label for="sortby">Sort By:</label>
+            <select id="sortby" name="sortby" onchange="this.form.submit()">
+                <option value="created_at" {% if request.GET.sortby == "created_at" or not request.GET.sortby %}selected{% endif %}>Newest</option>
+                <option value="likes" {% if request.GET.sortby == "likes" %}selected{% endif %}>Likes</option>
+                <option value="price" {% if request.GET.sortby == "price" %}selected{% endif %}>Price</option>
+                <option value="views" {% if request.GET.sortby == "views" %}selected{% endif %}>Views</option>
+                <option value="bids" {% if request.GET.sortby == "bids" %}selected{% endif %}>Bids</option>
+            </select>
+        </form>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Time Left</th>
+                <th># Bids</th>
+                <th># Views</th>
+                <th># Likes</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+                <tr>
+                    <td><a href="{% url 'item' item.id %}" style="color: black;text-decoration: underline;">{{ item.name }}</a></td>
+                    <td>${{ item.price }}</td>
+                    <td>{{ item.get_time_left }}</td>
+                    <td>{{ item.bid_count }}</td>
+                    <td>{{ item.views_count }}</td>
+                    <td>{{ item.likes_count }}</td>
+                    <td>{{ item.status }}</td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="7">No items found.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="pagination">
+        {% if items.has_previous %}
+            <a href="?page={{ items.previous_page_number }}">&laquo; Prev</a>
+        {% endif %}
+        <span>Page {{ items.number }} of {{ items.paginator.num_pages }}</span>
+        {% if items.has_next %}
+            <a href="?page={{ items.next_page_number }}">Next &raquo;</a>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
